@@ -6,27 +6,39 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
+import androidx.activity.viewModels
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.demo.databinding.ActivityMainBinding
+import com.example.demo.databinding.CardTasarimiBinding
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.card_tasarimi.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var sekillerList:ArrayList<Sekiller>
+    private val viewModel:ViewModel by viewModels()
     private lateinit var adapter:RVAdapter
 
     lateinit var inputtext :EditText
     lateinit var action_button: Button
 
     private lateinit var tasarim:ActivityMainBinding
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         tasarim = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
+
+
+
         rv.setHasFixedSize(true)
         rv.layoutManager=LinearLayoutManager(this)
+
+
 
         val s1 = Sekiller(1,"Square")
         val s2 = Sekiller(2,"Rectangle")
@@ -37,11 +49,15 @@ class MainActivity : AppCompatActivity() {
         sekillerList.add(s2)
         sekillerList.add(s3)
 
+
+
+
         adapter = RVAdapter(this, sekillerList)
         rv.adapter = adapter
 
         inputtext = tasarim.Textwatcher
         action_button = tasarim.button3
+
 
         inputtext.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -61,31 +77,28 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        tasarim.textViewSonuc.text = "0"
+
+        viewModel.sonuc.observe(this,{ s ->
+            tasarim.textViewSonuc.text = s
+        })
 
         tasarim.buttonSquare.setOnClickListener {
             val enteredLength = tasarim.editTextSideLength.text.toString()
             val enteredHeight = tasarim.editTextHeight.text.toString()
 
-            val length = enteredLength.toInt()
-            val height = enteredHeight.toInt()
 
-            val squareArea = length * height
-            
+            viewModel.dortgenalanbul(enteredLength,enteredHeight)
 
-            tasarim.textViewSonuc.text = squareArea.toString()
+
         }
 
         tasarim.buttonTriangel.setOnClickListener {
             val enteredLength = tasarim.editTextSideLength.text.toString()
             val enteredHeight = tasarim.editTextHeight.text.toString()
 
-            val length = enteredLength.toInt()
-            val height = enteredHeight.toInt()
 
-            val triangleArea = length * height / 2
+            viewModel.ucgenalanbul(enteredLength,enteredHeight)
 
-            tasarim.textViewSonuc.text = triangleArea.toString()
         }
     }
 }
