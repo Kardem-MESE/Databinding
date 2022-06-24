@@ -58,11 +58,4 @@ dependencies {
 
     implementation "androidx.lifecycle:lifecycle-livedata:2.4.0"
     kapt "androidx.lifecycle:lifecycle-compiler:2.4.0"
-
-
-
-
-
-
-
 }

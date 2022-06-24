@@ -17,88 +17,58 @@ import kotlinx.android.synthetic.main.card_tasarimi.*
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var sekillerList:ArrayList<Sekiller>
     private val viewModel:ViewModel by viewModels()
     private lateinit var adapter:RVAdapter
-
     lateinit var inputtext :EditText
-    lateinit var action_button: Button
-
-    private lateinit var tasarim:ActivityMainBinding
-
-
+    private lateinit var binding:ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
-        tasarim = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
+        setRecyclerview()
+        setListeners()
+        resultcalculation()
+        viewModel.refreshData()
 
-
-
-        rv.setHasFixedSize(true)
-        rv.layoutManager=LinearLayoutManager(this)
-
-
-
-        val s1 = Sekiller(1,"Square")
-        val s2 = Sekiller(2,"Rectangle")
-        val s3 = Sekiller(3,"Triangle")
-
-        sekillerList = ArrayList<Sekiller>()
-        sekillerList.add(s1)
-        sekillerList.add(s2)
-        sekillerList.add(s3)
-
-
-
-
-        adapter = RVAdapter(this, sekillerList)
-        rv.adapter = adapter
-
-        inputtext = tasarim.Textwatcher
-        action_button = tasarim.button3
-
-
-        inputtext.addTextChangedListener(object : TextWatcher {
+    }
+    private fun resultcalculation() {
+        viewModel.sonuc.observe(this,{ s ->
+            binding.textViewSonuc.text = s
+        })
+    }
+    private fun setListeners() {
+        binding.button3.setOnClickListener {
+            val s1 = Sekiller(4,"Elips")
+            viewModel.addsekil(s1)
+        }
+        binding.Textwatcher.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
             }
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
-                action_button.isEnabled = !inputtext.text.isEmpty()
-
             }
-
             override fun afterTextChanged(s: Editable?) {
-
             }
         })
-
-
-
-
-        viewModel.sonuc.observe(this,{ s ->
-            tasarim.textViewSonuc.text = s
-        })
-
-        tasarim.buttonSquare.setOnClickListener {
-            val enteredLength = tasarim.editTextSideLength.text.toString()
-            val enteredHeight = tasarim.editTextHeight.text.toString()
-
-
+        binding.buttonSquare.setOnClickListener {
+            val enteredLength = binding.editTextSideLength.text.toString()
+            val enteredHeight = binding.editTextHeight.text.toString()
             viewModel.dortgenalanbul(enteredLength,enteredHeight)
-
-
         }
-
-        tasarim.buttonTriangel.setOnClickListener {
-            val enteredLength = tasarim.editTextSideLength.text.toString()
-            val enteredHeight = tasarim.editTextHeight.text.toString()
-
-
+        binding.buttonTriangel.setOnClickListener {
+            val enteredLength = binding.editTextSideLength.text.toString()
+            val enteredHeight = binding.editTextHeight.text.toString()
             viewModel.ucgenalanbul(enteredLength,enteredHeight)
-
         }
+    }
+    private fun setRecyclerview() {
+        binding.rv.setHasFixedSize(true)
+        binding.rv.layoutManager=LinearLayoutManager(this)
+        viewModel.sekil.observe(this,{s ->
+            adapter = RVAdapter(this, s)
+            binding.rv.adapter = adapter
+        })
     }
 }
